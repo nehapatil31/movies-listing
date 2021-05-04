@@ -80,10 +80,13 @@ export default function EnhancedTable() {
   const [page, setPage] = React.useState(0);
   const [dense, setDense] = React.useState(false);
   const history = useHistory();
-  
+
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
 
   const [moviesList, setMoviesList] = useState([]);
+  const [allMoviesList, setAllMoviesList] = useState([]);
+
+  const [searchedText, setSearchedText] = useState('');
 
   const user = JSON.parse(localStorage.getItem('profile'));
 
@@ -95,11 +98,12 @@ export default function EnhancedTable() {
       movieObj.director = item.director;
       movieObj.score = item.imdb_score;
       movieObj.popularity = item['99popularity'];
-      movieObj.genre = item.genre.join(); 
-      movieObj._id = item._id; 
+      movieObj.genre = item.genre.join();
+      movieObj._id = item._id;
       updatedList.push(movieObj);
     });
-    setMoviesList(updatedList);
+    setMoviesList(()=>updatedList);
+    setAllMoviesList(updatedList);
   };
   useEffect(() => {
     async function fetchData() {
@@ -108,6 +112,23 @@ export default function EnhancedTable() {
     }
     fetchData();
   }, []);
+
+  /**
+   * @description - set searchedFriendsList based on search bar text
+   */
+  useEffect(() => {
+    if (allMoviesList.length) {
+      if (searchedText == '') {
+        setMoviesList(allMoviesList);
+      } else {
+        const results = allMoviesList.filter((movie) =>
+          movie.name.toLowerCase().includes(searchedText.toLowerCase()) ||
+          movie.director.toLowerCase().includes(searchedText.toLowerCase())
+        );
+        setMoviesList(results);
+      }
+    }
+  }, [searchedText, moviesList]);
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
@@ -130,7 +151,7 @@ export default function EnhancedTable() {
       let list = moviesList.filter((item) => {
         return item._id !== row._id;
       });
-      setMoviesList(()=>list);
+      setMoviesList(() => list);
       history.push('/');
     } catch (error) {
       console.log(error);
@@ -174,12 +195,15 @@ export default function EnhancedTable() {
 
   const emptyRows =
     rowsPerPage - Math.min(rowsPerPage, moviesList.length - page * rowsPerPage);
-  
 
   return (
     <div className={classes.root}>
       <Paper className={classes.paper}>
-        <TableToolbar numSelected={selected.length} />
+        <TableToolbar
+          numSelected={selected.length}
+          searchedText={searchedText}
+          setSearchedText={setSearchedText}
+        />
         <TableContainer>
           <Table
             className={classes.table}
@@ -238,7 +262,7 @@ export default function EnhancedTable() {
                             <IconButton
                               aria-label="delete"
                               onClick={() => {
-                                handleDelete({row});
+                                handleDelete({ row });
                               }}
                             >
                               <DeleteIcon />

@@ -7,6 +7,7 @@ import {
   Typography,
   IconButton,
   Tooltip,
+  TextField,
 } from '@material-ui/core';
 
 import { lighten, makeStyles } from '@material-ui/core/styles';
@@ -47,7 +48,7 @@ export default function TableToolbar(props) {
     director: '',
     '99popularity': '',
     genre: [],
-    imdb_score:''
+    imdb_score: '',
   });
 
   const user = JSON.parse(localStorage.getItem('profile'));
@@ -58,6 +59,11 @@ export default function TableToolbar(props) {
 
   const handleAddMovie = () => {
     setIsOpen(true);
+  };
+
+  const handleSearch = (e) => {
+    let text = e.target.value;
+    props.setSearchedText(()=>text);
   };
 
   return (
@@ -97,6 +103,13 @@ export default function TableToolbar(props) {
             Log in
           </Button>
         )}
+        <TextField
+          id="outlined-basic"
+          label="Search"
+          variant="outlined"
+          style={{ marginRight: '10px', marginLeft: '10px' }}
+          onChange={handleSearch}
+        />
         {user && (
           <Button
             variant="contained"
