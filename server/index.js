@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const moviesRoute = require('./routes/movie.js');
 const genresRoute = require('./routes/genre.js');
+const adminRoute = require('./routes/admin.js');
 
 const app = express();
 dotenv.config();
@@ -19,6 +20,7 @@ app.get('/', (req, res) => {
 
 app.use('/movies', moviesRoute);
 app.use('/genres', genresRoute);
+app.use('/admin', adminRoute);
 
 const PORT = process.env.PORT || 5000;
 
